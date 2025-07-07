@@ -1,5 +1,5 @@
 # ESP32 Websocket nggo DRV8833
-**Note:** Hurung iso websoket. Lagi init wifi soft AP. Iki repo anyar sing pindah ke FULL BAHASA C. CPP ne ngangeli.
+**Note:** Hurung iso websoket. Lagi init wifi soft AP. Iki repo anyar sing pindah ke FULL BAHASA C. CPP ne ngangeli.Pan kapan pindah nggo cpp neh.
 
 ## Bahan
 - GIT
@@ -46,7 +46,7 @@ code .
   ```bash
   idf.py build
   ```
-  
+
 4. Flash
   ```bash
   idf.py -p COM4 flash
