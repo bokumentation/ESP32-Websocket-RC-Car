@@ -1,0 +1,28 @@
+# VS Code specific files
+.vscode/ 
+
+# Compiled output and build artifacts
+/build/
+
+# ESP-IDF SDK configuration
+sdkconfig
+sdkconfig.old
+sdkconfig.ci
+sdkconfig.ci.* 
+
+# Clang related
+.clangd 
+.clang-format
+
+# Development Container related files (if you use devcontainers)
+.devcontainer/ 
+
+# Editor/OS specific files
+*.log
+*.bak
+*~
+*.swp
+.DS_Store 
+# macOS
+Thumbs.db 
+# Windows
