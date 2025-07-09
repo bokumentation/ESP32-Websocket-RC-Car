@@ -3,12 +3,14 @@
 
 # Compiled output and build artifacts
 /build/
+/managed_components/
+/backup/
 
 # ESP-IDF SDK configuration
-sdkconfig
-sdkconfig.old
-sdkconfig.ci
-sdkconfig.ci.* 
+# sdkconfig
+# sdkconfig.old
+# sdkconfig.ci
+# sdkconfig.ci.* 
 
 # Clang related
 .clangd 

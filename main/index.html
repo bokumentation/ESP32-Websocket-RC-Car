@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ESP32 Motor Control Remote</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #e0e7ff, #f3f4f6);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      color: #1f2937;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .status {
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .connected { color: #16a34a; }
+    .disconnected { color: #dc2626; }
+    #messages {
+      height: 200px;
+      overflow-y: auto;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 1rem;
+      scroll-behavior: smooth;
+    }
+    .message {
+      margin-bottom: 0.5rem;
+      padding: 8px;
+      border-radius: 5px;
+      animation: fadeIn 0.3s ease-in;
+    }
+    .system { color: #6b7280; }
+    .motor { background: #ecfdf5; color: #16a34a; }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    .motor-controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .motor-box {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .motor-box h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      margin: 5px 0;
+    }
+    .forward-btn { background: #2563eb; color: #fff; }
+    .forward-btn:hover { background: #1d4ed8; }
+    .backward-btn { background: #f59e0b; color: #fff; }
+    .backward-btn:hover { background: #d97706; }
+    .stop-btn { background: #dc2626; color: #fff; }
+    .stop-btn:hover { background: #b91c1c; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 15px; }
+      h1 { font-size: 1.25rem; }
+      .motor-controls { flex-direction: column; }
+      button { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ESP32 Motor Control Remote</h1>
+    <div>Status: <span id="status" class="disconnected">Disconnected</span></div>
+    <div id="messages"></div>
+    <div class="control-group">
+      <div class="motor-controls">
+        <div class="motor-box">
+          <h2>Motor A</h2>
+          <button class="forward-btn" onclick="sendCommand('motorA_forward')">Forward</button>
+          <button class="backward-btn" onclick="sendCommand('motorA_backward')">Backward</button>
+          <button class="stop-btn" onclick="sendCommand('motorA_stop')">Stop</button>
+        </div>
+        <div class="motor-box">
+          <h2>Motor B</h2>
+          <button class="forward-btn" onclick="sendCommand('motorB_forward')">Forward</button>
+          <button class="backward-btn" onclick="sendCommand('motorB_backward')">Backward</button>
+          <button class="stop-btn" onclick="sendCommand('motorB_stop')">Stop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Changed port from 81 to 80 because HTTP and WS now share the same port
+    // However, esp_websocket_server handles a separate WS endpoint, typically on a different port.
+    // The library `esp-websocket-server` used here runs WS on the same port as HTTP server,
+    // but on the /ws path.
+    const socket = new WebSocket('ws://' + window.location.hostname + ':80/ws');
+    const statusEl = document.getElementById('status');
+    const messagesEl = document.getElementById('messages');
+    
+    socket.onopen = () => {
+      statusEl.textContent = 'Connected';
+      statusEl.className = 'connected';
+      addMessage('[System] WebSocket connected', 'system');
+    };
+    
+    socket.onmessage = (e) => {
+      addMessage(e.data, 'motor');
+    };
+    
+    socket.onclose = () => {
+      statusEl.textContent = 'Disconnected';
+      statusEl.className = 'disconnected';
+      addMessage('[System] Connection lost. Refresh page to reconnect.', 'system');
+    };
+    
+    function sendCommand(command) {
+      if(socket.readyState === WebSocket.OPEN) {
+        socket.send(command);
+      }
+    }
+    
+    function addMessage(msg, type) {
+      const div = document.createElement('div');
+      div.className = `message ${type}`;
+      div.textContent = msg;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

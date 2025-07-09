@@ -1,2 +1,3 @@
-idf_component_register(SRCS "my_nvs_init.c" "wifi.c" "main.c"
-                    INCLUDE_DIRS ".")
+idf_component_register(SRCS "main.c" "root_html.S"
+                    INCLUDE_DIRS "."
+                    REQUIRES "esp_wifi" "esp_event" "nvs_flash" "esp_netif" "esp_http_server" "driver" "freertos")
